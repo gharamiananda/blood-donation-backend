@@ -9,28 +9,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id                 String     @id @default(uuid())
+  name           String
+
+  email              String     @unique
+  password           String
+  bloodType          String
+  location          String
+  availability          Boolean @default(false)
+  createdAt          DateTime   @default(now())
+
+  updatedAt          DateTime   @updatedAt
+  userId            UserProfile?
+
+  @@map("users")
+}
+
+
+
+
+model Request {
+  
+  id                  String   @id @default(uuid())
+  donorId                String
+  requesterId               String   
+
+  phoneNumber       String
+
+  dateOfDonation             String
+  hospitalName  String
+  appointmentFee      Int
+  hospitalAddress       String
+  reason String
+  requestStatus              RequestStatus
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("request")
+}
+
+
+model UserProfile {
+  id            String   @id @default(uuid())
+  bio  String
+  age Int
+  lastDonationDate String 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId User @relation(fields: [id], references: [id])
+
+  @@map("profile")
+}
+
+
+
+
+enum RequestStatus {
+  PENDING
+   APPROVED
+    REJECTED
 }
