@@ -18,19 +18,19 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "requests" (
+    "id" TEXT NOT NULL,
     "donorId" TEXT NOT NULL,
     "requesterId" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "dateOfDonation" TEXT NOT NULL,
     "hospitalName" TEXT NOT NULL,
-    "appointmentFee" INTEGER NOT NULL,
     "hospitalAddress" TEXT NOT NULL,
     "reason" TEXT NOT NULL,
-    "requestStatus" "RequestStatus" NOT NULL,
+    "requestStatus" "RequestStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "requests_pkey" PRIMARY KEY ("donorId","requesterId")
+    CONSTRAINT "requests_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -48,6 +48,9 @@ CREATE TABLE "user_profiles" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "requests_donorId_requesterId_key" ON "requests"("donorId", "requesterId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_profiles_userId_key" ON "user_profiles"("userId");

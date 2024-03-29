@@ -9,15 +9,14 @@ import ApiError from "../errors/ApiError";
 const auth = () => {
     return async (req: Request & { user?: any }, res: Response, next: NextFunction) => {
         try {
-            const token = req.headers.authorization
-
+            const token = req.headers.authorization;
             if (!token) {
                 throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!")
             }
 
             const verifiedUser = jwtHelpers.verifyToken(token, config.jwt.jwt_secret as Secret)
-
-            req.user = verifiedUser;
+// console.log('verifiedUser', verifiedUser)
+            req.currentUser = verifiedUser;
 
            
             next()
