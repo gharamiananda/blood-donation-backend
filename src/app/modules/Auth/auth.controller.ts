@@ -24,6 +24,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
         }
     })
 });
+
 const registerUser = catchAsync(async (req: Request, res: Response) => {
 
     const result = await AuthServices.createUserIntoDB(req);
