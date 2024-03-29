@@ -4,71 +4,64 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id                 String     @id @default(uuid())
-  name           String
-
-  email              String     @unique
-  password           String
-  bloodType          String
+  id                String       @id @default(uuid())
+  name              String
+  email             String       @unique
+  password          String
+  bloodType         String
   location          String
-  availability          Boolean @default(false)
-  createdAt          DateTime   @default(now())
+  availability      Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  profile           UserProfile?
 
-  updatedAt          DateTime   @updatedAt
-  userId            UserProfile?
-
-  @@map("users")
+  donorRequests     Request[]    @relation("DonorRequests")
+  requesterRequests Request[]    @relation("RequesterRequests")
 }
-
-
-
 
 model Request {
-  
-  id                  String   @id @default(uuid())
-  donorId                String
-  requesterId               String   
-
+  donorId           String
+  requesterId       String
   phoneNumber       String
+  dateOfDonation    String
+  hospitalName      String
+  appointmentFee    Int
+  hospitalAddress   String
+  reason            String
+  requestStatus     RequestStatus
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
-  dateOfDonation             String
-  hospitalName  String
-  appointmentFee      Int
-  hospitalAddress       String
-  reason String
-  requestStatus              RequestStatus
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  requesterUser     User         @relation("RequesterRequests", fields: [requesterId], references: [id])
+  donorUser         User         @relation("DonorRequests", fields: [donorId], references: [id])
 
-  @@map("request")
+  @@id([donorId, requesterId])
+  @@map("requests")
 }
-
 
 model UserProfile {
-  id            String   @id @default(uuid())
-  bio  String
-  age Int
-  lastDonationDate String 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String       @id @default(uuid())
+  bio               String
+  age               Int
+  lastDonationDate  String
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  userId            String       @unique
 
-  userId User @relation(fields: [id], references: [id])
+  user              User         @relation(fields: [userId], references: [id])
 
-  @@map("profile")
+  @@map("user_profiles")
 }
-
-
-
 
 enum RequestStatus {
   PENDING
-   APPROVED
-    REJECTED
+  APPROVED
+  REJECTED
 }

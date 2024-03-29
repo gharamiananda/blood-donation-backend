@@ -19,7 +19,8 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
         success: true,
         message: "Logged in successfully!",
         data: {
-            accessToken: result.accessToken
+            ... result.userData,
+            token: result.accessToken
         }
     })
 });
@@ -27,9 +28,9 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 
     const result = await AuthServices.createUserIntoDB(req);
     sendResponse(res, {
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         success: true,
-        message: "Admin Created successfuly!",
+        message: "User registered successfully",
         data: result
     })
 });

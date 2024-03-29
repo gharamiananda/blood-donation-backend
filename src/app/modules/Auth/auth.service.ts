@@ -38,7 +38,15 @@ const loginUser = async (payload: {
 
     return {
         accessToken,
-        refreshToken
+        refreshToken,
+        userData:{
+            id: userData.id,
+            name: userData.name,
+
+            email: userData.email,
+
+        }
+
     };
 };
 
@@ -52,7 +60,7 @@ const createUserIntoDB = async (req: Request) => {
 
       
             "email":  req.body.email,
-            "password": req.body.password,
+            "password": hashedPassword,
             "bloodType":req.body.bloodType,
             "location": req.body.location,
             
@@ -71,13 +79,12 @@ const createUserIntoDB = async (req: Request) => {
             data: userData
         });
 
-        console.log('createdUserData', createdUserData)
-
-        const createdAdminData = await transactionClient.userProfile.create({
-            data: {...profileData,userId:createdUserData.id as any}
+        const created = await transactionClient.userProfile.create({
+            data: {...profileData,userId:createdUserData.id as string}
         });
+        const {password,...restData}=createdUserData;
 
-        return createdAdminData;
+        return {...restData,userProfile:created};
     });
 
     return result;
