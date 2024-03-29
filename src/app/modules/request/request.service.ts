@@ -1,5 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
+import { paginationHelper } from "../../../helpars/paginationHelper";
 import prisma from "../../../shared/prisma";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
 const createRequestIntoDB = async (currentUser:Record<string,unknown>,payload: any) => {
 
@@ -8,7 +11,7 @@ const createRequestIntoDB = async (currentUser:Record<string,unknown>,payload: a
             id: payload.donorId
         },
         include: {
-            profile: true,
+            userProfile: true,
             
             
           },
@@ -37,6 +40,7 @@ const createRequestIntoDB = async (currentUser:Record<string,unknown>,payload: a
 
 
 const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
+
 
     const request = await prisma.request.findMany({
         where: {
@@ -70,15 +74,99 @@ const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
     };
 };
 
+ type IAdminFilterRequest = {
+    name?: string | undefined;
+    email?: string | undefined;
+    contactNumber?: string | undefined;
+    searchTerm?: string | undefined;
+}
+
+ const requestSearchAbleFields = ['name', 'email','bloodType', 'location'];
+const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginationOptions) => {
+    const { page, limit, skip } = paginationHelper.calculatePagination(options);
+    const { searchTerm, ...filterData } = params;
+
+    const andCondions: Prisma.RequestWhereInput[] = [];
+
+    //console.log(filterData);
+    if (params.searchTerm) {
+        andCondions.push({
+            OR: requestSearchAbleFields.map(field => ({
+                [field]: {
+                    contains: params.searchTerm,
+                    mode: 'insensitive'
+                }
+            }))
+        })
+    };
+
+    if (Object.keys(filterData).length > 0) {
+        andCondions.push({
+            AND: Object.keys(filterData).map(key => ({
+                [key]: {
+                    equals: (filterData as any)[key]
+                }
+            }))
+        })
+    };
+   
+
+    const whereConditions: Prisma.RequestWhereInput = { AND: andCondions }
+
+    const result = await prisma.request.findMany({
+        where: whereConditions,
+        include: {
+            donorUser: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    bloodType: true,
+                    location: true,
+                    availability: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    userProfile: true 
+                }
+            }
+        },
+        skip,
+        take: limit,
+        orderBy: options.sortBy && options.sortOrder ? {
+            [options.sortBy]: options.sortOrder
+        } : {
+            createdAt: 'desc'
+        }
+    });
+    
+    
+
+    const total = await prisma.request.count({
+        where: whereConditions
+    });
+
+    const data = result.map(request => (request.donorUser));
+    return {
+        meta: {
+            page,
+            limit,
+            total
+        },
+        data: data
+    };
+};
+
 
 
 const updateStatusRequestIntoDB = async (requestId:string,payload:any) => {
 
+    console.log('payload', payload)
     const request = await prisma.request.update({
         where: {
             id: requestId
         },
-       data: payload
+       data: {
+        requestStatus:payload?.status}
 
         
     });
@@ -92,5 +180,6 @@ const updateStatusRequestIntoDB = async (requestId:string,payload:any) => {
 export const RequestServices = {
     createRequestIntoDB,
     getMyDonorRequestsFromDB,
-    updateStatusRequestIntoDB
+    updateStatusRequestIntoDB,
+    getDonorListFromDB
 }

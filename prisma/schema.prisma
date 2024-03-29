@@ -40,8 +40,8 @@ model Request {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  requesterUser     User         @relation("RequesterRequests", fields: [requesterId], references: [id])
-  donorUser         User         @relation("DonorRequests", fields: [donorId], references: [id])
+  requester     User         @relation("RequesterRequests", fields: [requesterId], references: [id])
+  donor         User         @relation("DonorRequests", fields: [donorId], references: [id])
  @@unique([donorId, requesterId]) 
   @@map("requests")
 }

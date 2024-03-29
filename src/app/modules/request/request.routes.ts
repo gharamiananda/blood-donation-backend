@@ -18,11 +18,18 @@ router.get(
 );
 
 
-router.get(
+router.put(
     '/donation-request/:requestId',
     auth(),
     RequestController.updateStatusRequest
 );
+
+router.get(
+    '/donor-list',
+    // auth(),
+    RequestController.getDonorList
+);
+
 
 
 

@@ -16,7 +16,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
     })
 });
 
-const getMyDonorRequests = catchAsync(async (req: Request, res: Response) => {
+const updateUserProfile= catchAsync(async (req: Request, res: Response) => {
     const result = await UserServices.updateMyProfileIntoDB(req?.currentUser,req.body);
 
 
@@ -29,5 +29,5 @@ const getMyDonorRequests = catchAsync(async (req: Request, res: Response) => {
 });
 export const UserController = {
     getMyProfile,
-    getMyDonorRequests
+    updateUserProfile
 };

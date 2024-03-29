@@ -9,7 +9,7 @@ const getMyProfileFromDB = async (currentUser:JwtPayload) => {
             id: currentUser?.userId
         },
         include: {
-            profile: true,
+            userProfile: true,
             
             
           },

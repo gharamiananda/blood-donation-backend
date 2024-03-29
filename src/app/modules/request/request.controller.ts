@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
+import pick from "../../../shared/pick";
 import sendResponse from "../../../shared/sendResponse";
 import { RequestServices } from "./request.service";
 
@@ -39,8 +40,29 @@ const updateStatusRequest = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 });
+
+
+const donorFilterableFields = ['bloodType', 'searchTerm', 'bloodType','availability'];
+
+const getDonorList: RequestHandler = catchAsync(async (req: Request, res: Response) => {
+    // console.log(req.query)
+    const filters = pick(req.query, donorFilterableFields);
+    const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
+    console.log(options)
+    const result = await RequestServices.getDonorListFromDB(filters, options)
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Donors successfully found",
+        meta: result.meta,
+        data: result.data
+    })
+})
+
 export const RequestController = {
     createRequest,
     getMyDonorRequests,
-    updateStatusRequest
+    updateStatusRequest,
+    getDonorList
 };
