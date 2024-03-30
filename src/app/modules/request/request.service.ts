@@ -49,7 +49,7 @@ const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
         include: {
         
             
-          requesterUser:{
+          requester:{
             select:{
                 id : true,
                 name : true,
@@ -116,7 +116,7 @@ const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginat
     const result = await prisma.request.findMany({
         where: whereConditions,
         include: {
-            donorUser: {
+            donor: {
                 select: {
                     id: true,
                     name: true,
@@ -145,7 +145,7 @@ const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginat
         where: whereConditions
     });
 
-    const data = result.map(request => (request.donorUser));
+    const data = result.map(request => (request.donor));
     return {
         meta: {
             page,
