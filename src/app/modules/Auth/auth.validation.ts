@@ -1,3 +1,4 @@
+import { UserBloodGroup } from "@prisma/client";
 import { z } from "zod";
 
 const loginUser = z.object({
@@ -15,16 +16,6 @@ const loginUser = z.object({
 
 
 
-export const BloodGroup = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-',
-  ];
 
 
 const registerUser = z.object({
@@ -37,9 +28,18 @@ const registerUser = z.object({
         password: z.string({
             required_error:"password field is required."
         }),
-        bloodType: z.enum([...BloodGroup] as [string, ...string[]],{
-            required_error:"bloodType field is required."
-        }),
+        // bloodType: z.enum([...BloodGroup] as [string, ...string[]],{
+        //     required_error:"bloodType field is required."
+        // }),
+        bloodType: z.enum([...Object.values(UserBloodGroup)] as [string, ...string[]]
+        
+        ,{
+                required_error:"bloodType field is required.",
+            invalid_type_error:'bloodType must be a valid Blood group type'
+
+            }
+        ),
+
      
         "location": z.string({
             required_error:"location field is required."

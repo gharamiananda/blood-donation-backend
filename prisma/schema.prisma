@@ -17,7 +17,7 @@ model User {
   name              String
   email             String       @unique
   password          String
-  bloodType         String
+  bloodType         UserBloodGroup
   location          String
   availability      Boolean      @default(false)
   createdAt         DateTime     @default(now())
@@ -69,13 +69,15 @@ enum RequestStatus {
 }
 
 
-// enum BloodGroup {
-//    A+
-//     A-
-//     B+
-//     B-
-//     AB+
-//     AB-
-//     O+
-//     O-
-// }
+
+enum UserBloodGroup {
+ A_POSITIVE
+  A_NEGATIVE
+   B_POSITIVE
+   B_NEGATIVE
+    AB_POSITIVE
+     AB_NEGATIVE
+      O_POSITIVE
+  O_NEGATIVE
+}
+
