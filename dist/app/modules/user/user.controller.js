@@ -16,9 +16,9 @@ exports.UserController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const request_service_1 = require("./request.service");
+const user_service_1 = require("./user.service");
 const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield request_service_1.UserServices.getMyProfileFromDB(req === null || req === void 0 ? void 0 : req.currentUser);
+    const result = yield user_service_1.UserServices.getMyProfileFromDB(req === null || req === void 0 ? void 0 : req.currentUser);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -27,7 +27,7 @@ const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const updateUserProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield request_service_1.UserServices.updateMyProfileIntoDB(req === null || req === void 0 ? void 0 : req.currentUser, req.body);
+    const result = yield user_service_1.UserServices.updateMyProfileIntoDB(req === null || req === void 0 ? void 0 : req.currentUser, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

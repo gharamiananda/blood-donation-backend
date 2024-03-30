@@ -66,77 +66,61 @@ const getMyDonorRequestsFromDB = (currentUser) => __awaiter(void 0, void 0, void
             },
         },
     });
-    return { request
-    };
+    return request;
 });
 const requestSearchAbleFields = ['name', 'email', 'bloodType', 'location'];
 const getDonorListFromDB = (params, options) => __awaiter(void 0, void 0, void 0, function* () {
-    const { page, limit, skip } = paginationHelper_1.paginationHelper.calculatePagination(options);
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(options);
     const { searchTerm } = params, filterData = __rest(params, ["searchTerm"]);
-    const andCondions = [];
-    //console.log(filterData);
-    if (params.searchTerm) {
-        andCondions.push({
-            OR: requestSearchAbleFields.map(field => ({
+    const whereConditions = {};
+    if (searchTerm) {
+        whereConditions.OR =
+            requestSearchAbleFields.map(field => ({
                 [field]: {
                     contains: params.searchTerm,
                     mode: 'insensitive'
                 }
-            }))
-        });
+            }));
     }
-    ;
-    if (Object.keys(filterData).length > 0) {
-        andCondions.push({
-            AND: Object.keys(filterData).map(key => ({
-                [key]: {
-                    equals: filterData[key]
-                }
-            }))
-        });
+    if (filterData.bloodType) {
+        whereConditions.bloodType = filterData.bloodType;
     }
-    ;
-    const whereConditions = { AND: andCondions };
-    const result = yield prisma_1.default.request.findMany({
+    whereConditions.availability = filterData.availability || false;
+    let orderBy = {};
+    if (sortBy) {
+        orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc';
+    }
+    if (sortBy === 'age' || sortBy === 'lastDonationDate') {
+        orderBy = {
+            userProfile: {
+                [sortBy]: sortOrder === 'desc' ? 'desc' : 'asc'
+            }
+        };
+    }
+    // Fetch paginated and filtered users (donors) from the database
+    const users = yield prisma_1.default.user.findMany({
         where: whereConditions,
         include: {
-            donor: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    bloodType: true,
-                    location: true,
-                    availability: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    userProfile: true
-                }
-            }
+            userProfile: true,
         },
-        skip,
-        take: limit,
-        orderBy: options.sortBy && options.sortOrder ? {
-            [options.sortBy]: options.sortOrder
-        } : {
-            createdAt: 'desc'
-        }
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit
     });
-    const total = yield prisma_1.default.request.count({
-        where: whereConditions
-    });
-    const data = result.map(request => (request.donor));
-    return {
+    // Fetch total count of users matching the filter criteria
+    const totalCount = yield prisma_1.default.user.count({ where: whereConditions });
+    // Prepare response object
+    const response = {
         meta: {
-            page,
-            limit,
-            total
+            total: totalCount,
+            page: page,
+            limit: limit
         },
-        data: data
+        data: users
     };
+    return response;
 });
 const updateStatusRequestIntoDB = (requestId, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('payload', payload);
     const request = yield prisma_1.default.request.update({
         where: {
             id: requestId

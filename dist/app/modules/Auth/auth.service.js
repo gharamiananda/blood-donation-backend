@@ -87,6 +87,7 @@ const createUserIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* ()
         "password": hashedPassword,
         "bloodType": req.body.bloodType,
         "location": req.body.location,
+        availability: req.body.availability
     };
     const profileData = {
         "age": req.body.age,

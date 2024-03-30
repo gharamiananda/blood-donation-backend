@@ -47,10 +47,8 @@ const updateStatusRequest = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 }));
 const donorFilterableFields = ['bloodType', 'searchTerm', 'bloodType', 'availability'];
 const getDonorList = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // console.log(req.query)
     const filters = (0, pick_1.default)(req.query, donorFilterableFields);
     const options = (0, pick_1.default)(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
-    console.log(options);
     const result = yield request_service_1.RequestServices.getDonorListFromDB(filters, options);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

@@ -123,10 +123,21 @@ const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginat
     // Fetch paginated and filtered users (donors) from the database
     const users = await prisma.user.findMany({
       where: whereConditions,
-      include: {
-        userProfile: true,
+    //   include: {
+    //     userProfile: true,
 
 
+    //   },
+    select: {
+        id: true,
+        name: true,
+        email: true,
+        bloodType: true,
+        location: true,
+        availability: true,
+        createdAt: true,
+        updatedAt: true,
+        userProfile:true
       },
       
 

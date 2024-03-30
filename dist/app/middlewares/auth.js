@@ -24,7 +24,6 @@ const auth = () => {
                 throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized!");
             }
             const verifiedUser = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.jwt_secret);
-            // console.log('verifiedUser', verifiedUser)
             req.currentUser = verifiedUser;
             next();
         }

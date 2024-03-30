@@ -1,9 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import { Request } from 'express';
+import httpStatus from 'http-status';
 import { Secret } from "jsonwebtoken";
 import config from "../../../config";
 import { jwtHelpers } from "../../../helpars/jwtHelpers";
 import prisma from "../../../shared/prisma";
+import ApiError from '../../errors/ApiError';
 
 const loginUser = async (payload: {
     email: string,
@@ -51,6 +53,17 @@ const loginUser = async (payload: {
 };
 
 const createUserIntoDB = async (req: Request) => {
+
+
+    // /find  already user exit or not
+    const findUser = await prisma.user.findUnique({ where: {
+        email: req.body.email
+    } });
+
+    if(findUser?.email){
+        throw new ApiError(httpStatus.BAD_REQUEST, "you have already register with this email!")
+
+    }
 
     const hashedPassword: string = await bcrypt.hash(req.body.password, 12)
 
