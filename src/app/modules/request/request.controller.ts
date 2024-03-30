@@ -45,10 +45,10 @@ const updateStatusRequest = catchAsync(async (req: Request, res: Response) => {
 const donorFilterableFields = ['bloodType', 'searchTerm', 'bloodType','availability'];
 
 const getDonorList: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-    // console.log(req.query)
+   
     const filters = pick(req.query, donorFilterableFields);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
-    console.log(options)
+  
     const result = await RequestServices.getDonorListFromDB(filters, options)
 
     sendResponse(res, {

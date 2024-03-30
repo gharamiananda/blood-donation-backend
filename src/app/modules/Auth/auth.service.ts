@@ -63,6 +63,7 @@ const createUserIntoDB = async (req: Request) => {
             "password": hashedPassword,
             "bloodType":req.body.bloodType,
             "location": req.body.location,
+            availability: req.body.availability
             
     
     }

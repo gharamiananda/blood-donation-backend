@@ -1,4 +1,4 @@
-import { Prisma, RequestStatus } from "@prisma/client";
+import { RequestStatus } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import prisma from "../../../shared/prisma";
@@ -67,11 +67,7 @@ const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
         
     });
 
-    return {request
-
-        
-
-    };
+    return request;
 };
 
  type IAdminFilterRequest = {
@@ -79,81 +75,80 @@ const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
     email?: string | undefined;
     contactNumber?: string | undefined;
     searchTerm?: string | undefined;
+    bloodType?: string  | undefined;
+    availability?: boolean  | undefined;
+
+
 }
 
- const requestSearchAbleFields = ['name', 'email','bloodType', 'location'];
+ const requestSearchAbleFields = ['name', 'email','bloodType','location'];
 const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginationOptions) => {
-    const { page, limit, skip } = paginationHelper.calculatePagination(options);
+    const { page, limit, skip ,sortBy,sortOrder} = paginationHelper.calculatePagination(options);
     const { searchTerm, ...filterData } = params;
 
-    const andCondions: Prisma.RequestWhereInput[] = [];
-
-    //console.log(filterData);
-    if (params.searchTerm) {
-        andCondions.push({
-            OR: requestSearchAbleFields.map(field => ({
-                [field]: {
-                    contains: params.searchTerm,
-                    mode: 'insensitive'
-                }
-            }))
-        })
-    };
-
-    if (Object.keys(filterData).length > 0) {
-        andCondions.push({
-            AND: Object.keys(filterData).map(key => ({
-                [key]: {
-                    equals: (filterData as any)[key]
-                }
-            }))
-        })
-    };
-   
-
-    const whereConditions: Prisma.RequestWhereInput = { AND: andCondions }
-
-    const result = await prisma.request.findMany({
-        where: whereConditions,
-        include: {
-            donor: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    bloodType: true,
-                    location: true,
-                    availability: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    userProfile: true 
-                }
-            }
-        },
-        skip,
-        take: limit,
-        orderBy: options.sortBy && options.sortOrder ? {
-            [options.sortBy]: options.sortOrder
-        } : {
-            createdAt: 'desc'
+    const whereConditions:Record<string,unknown> = {};
+    if (searchTerm) {
+      whereConditions.OR =   
+      
+      requestSearchAbleFields.map(field => ({
+        [field]: {
+            contains: params.searchTerm,
+            mode: 'insensitive'
         }
-    });
+    }))
+    }
+    if (filterData.bloodType) {
+      whereConditions.bloodType = filterData.bloodType;
+    }
     
+      whereConditions.availability = filterData.availability||false;
     
+    let orderBy :Record<string,unknown>= {};
+    if (sortBy) {
+      orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc';
+    }
+    if(sortBy==='age' ||sortBy==='lastDonationDate'){
+        orderBy=  {
+            userProfile:{
 
-    const total = await prisma.request.count({
-        where: whereConditions
+                [sortBy]: sortOrder === 'desc' ? 'desc' : 'asc'
+            }
+            
+            
+        }
+    }
+  
+
+
+    // Fetch paginated and filtered users (donors) from the database
+    const users = await prisma.user.findMany({
+      where: whereConditions,
+      include: {
+        userProfile: true,
+
+
+      },
+      
+
+      orderBy,
+
+      skip: (page - 1) * limit,
+      take: limit
     });
 
-    const data = result.map(request => (request.donor));
-    return {
-        meta: {
-            page,
-            limit,
-            total
-        },
-        data: data
+    // Fetch total count of users matching the filter criteria
+    const totalCount = await prisma.user.count({ where: whereConditions });
+
+    // Prepare response object
+    const response = {
+      meta: {
+        total: totalCount,
+        page:  page,
+        limit:limit
+      },
+      data: users
     };
+return response
 };
 
 
