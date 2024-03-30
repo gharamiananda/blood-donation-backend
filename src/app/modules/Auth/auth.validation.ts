@@ -2,8 +2,10 @@ import { z } from "zod";
 
 const loginUser = z.object({
     body: z.object({
-        email: z.string({
-            required_error:"email field is required."
+       email: z.string({
+            required_error: "email field is required."
+        }).regex(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/i, {
+            message: "Email must be a valid email address."
         }),
         password: z.string({
             required_error:"password field is required."
@@ -13,22 +15,38 @@ const loginUser = z.object({
 
 
 
+export const BloodGroup = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+  ];
+
+
 const registerUser = z.object({
     body: z.object({
-        email: z.string({
-            required_error:"email field is required."
+       email: z.string({
+            required_error: "email field is required."
+        }).regex(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/i, {
+            message: "Email must be a valid email address."
         }),
         password: z.string({
             required_error:"password field is required."
         }),
-        "bloodType": z.string({
+        bloodType: z.enum([...BloodGroup] as [string, ...string[]],{
             required_error:"bloodType field is required."
         }),
+     
         "location": z.string({
             required_error:"location field is required."
         }),
         "age": z.number({
-            required_error:"age field is required."
+            required_error:"age field is required.",
+            invalid_type_error:'age must be a valid positive number'
         }),
         "bio": z.string({
             required_error:"bio field is required."

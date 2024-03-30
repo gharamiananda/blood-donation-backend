@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, RequestStatus } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import prisma from "../../../shared/prisma";
@@ -158,9 +158,8 @@ const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginat
 
 
 
-const updateStatusRequestIntoDB = async (requestId:string,payload:any) => {
+const updateStatusRequestIntoDB = async (requestId:string,payload:{status:RequestStatus}) => {
 
-    console.log('payload', payload)
     const request = await prisma.request.update({
         where: {
             id: requestId

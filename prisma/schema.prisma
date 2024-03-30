@@ -51,7 +51,7 @@ model Request {
 model UserProfile {
   id                String       @id @default(uuid())
   bio               String
-  age               Int
+  age               Int 
   lastDonationDate  String
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
@@ -67,3 +67,15 @@ enum RequestStatus {
   APPROVED
   REJECTED
 }
+
+
+// enum BloodGroup {
+//    A+
+//     A-
+//     B+
+//     B-
+//     AB+
+//     AB-
+//     O+
+//     O-
+// }
