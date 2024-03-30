@@ -81,7 +81,7 @@ const getMyDonorRequestsFromDB = async (currentUser:JwtPayload) => {
 
 }
 
- const requestSearchAbleFields = ['name', 'email','bloodType','location'];
+ const requestSearchAbleFields = ['name', 'email','location'];
 const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginationOptions) => {
     const { page, limit, skip ,sortBy,sortOrder} = paginationHelper.calculatePagination(options);
     const { searchTerm, ...filterData } = params;
@@ -97,9 +97,9 @@ const getDonorListFromDB = async (params: IAdminFilterRequest, options: IPaginat
         }
     }))
     }
-    if (filterData.bloodType) {
-      whereConditions.bloodType = filterData.bloodType;
-    }
+    // if (filterData.bloodType) {
+    //   whereConditions.bloodType = filterData.bloodType;
+    // }
     
       whereConditions.availability = filterData.availability||false;
     
