@@ -28,19 +28,6 @@ const registerUser = z.object({
         password: z.string({
             required_error:"password field is required."
         }),
-        // bloodType: z.enum([...BloodGroup] as [string, ...string[]],{
-        //     required_error:"bloodType field is required."
-        // }),
-        bloodType: z.enum([...Object.values(UserBloodGroup)] as [string, ...string[]]
-        
-        ,{
-                required_error:"bloodType field is required.",
-            invalid_type_error:'bloodType must be a valid Blood group type'
-
-            }
-        ),
-
-     
         "location": z.string({
             required_error:"location field is required."
         }),
@@ -53,7 +40,18 @@ const registerUser = z.object({
         }),
         "lastDonationDate": z.string({
             required_error:"lastDonationDate field is required."
-        })
+        }),
+        bloodType: z.enum([...Object.values(UserBloodGroup)] as [string, ...string[]]
+        
+        ,{
+                required_error:"bloodType field is required.",
+            invalid_type_error:'bloodType must be a valid Blood group type'
+
+            }
+        ),
+
+     
+       
     })
 });
 
