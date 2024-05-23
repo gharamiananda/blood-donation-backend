@@ -10,7 +10,18 @@ const http_status_1 = __importDefault(require("http-status"));
 const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalErrorHandler"));
 const routes_1 = __importDefault(require("./app/routes"));
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+var whitelist = ['http://localhost:3000', 'http://example2.com'];
+var corsOptions = {
+    origin: function (origin, callback) {
+        if (true) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+app.use((0, cors_1.default)(corsOptions));
 app.use((0, cookie_parser_1.default)());
 //parser
 app.use(express_1.default.json());
