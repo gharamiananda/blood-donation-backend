@@ -10,7 +10,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     const { refreshToken } = result;
 
     res.cookie('refreshToken', refreshToken, {
-        secure: false,
+        secure: true,
         httpOnly: true
     });
 
