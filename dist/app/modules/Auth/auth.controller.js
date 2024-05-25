@@ -21,8 +21,10 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     const result = yield auth_service_1.AuthServices.loginUser(req.body);
     const { refreshToken } = result;
     res.cookie('refreshToken', refreshToken, {
-        secure: false,
-        httpOnly: true
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: "none",
     });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
