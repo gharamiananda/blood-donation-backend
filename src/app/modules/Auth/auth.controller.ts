@@ -9,7 +9,14 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 
     const { refreshToken } = result;
 
-    res.cookie('refreshToken', refreshToken);
+    res.cookie('refreshToken', refreshToken,{
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      // secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: "none",
+      // domain: 'https://knighthunt.vercel.app'
+    });
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
